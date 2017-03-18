@@ -1,0 +1,22 @@
+<div style='width: 800px; margin: 0 auto;'>
+    <h1>{{ title }}</h1>
+    <h2>{{ subTitle }}</h2>
+    <form method='POST' action='.'> {% csrf_token %}
+        <!--<input name='query' type='text' placeholder='Type query here' />-->
+        {{ form.as_p }}
+        <input type='submit' value='Go'/>
+    </form>
+    {% if loadResults == 'True' %}
+        {% if response.Response == 'True' %}
+            <p>Search results for ''{{ query }}''</p>
+            <ul>
+                {% for item in response.Search %}
+                    <li>{{ item.Title }}, {{item.Year}}</li>
+                {% endfor %}
+            </ul>
+            <p> Showing top 10 of {{ response.totalResults }} entries found. </p>
+        {% else %}
+            <p>Error retrieving results. Please try a different query.</p>
+        {% endif %}
+    {% endif %}
+</div>
