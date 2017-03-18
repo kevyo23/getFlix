@@ -1,0 +1,47 @@
+depreciated.txt
+elements removed from index.html
+<!--
+
+<script>
+/*
+$(document).ready(function () {
+        GetData();
+
+});
+
+function GetData() {
+    alert('hi');
+
+    //  alert(textblock.value);
+    $.ajax({
+        type: "GET",
+        url: "http://www.omdbapi.com/?i=tt0107086?jsoncallback=?",
+        data: {"hi": "gday"},
+        contentType: "application/json; charset=utf-8",
+        dataType: "jsonp",
+
+        success: function (msg) {
+            var results = $.parseJSON(msg.d);
+            alert(msg);
+            alert(results);
+        },
+        error: function (result) {
+            alert('here');
+            var tt = result.text;
+            alert(tt);
+        }
+    }).done(function () {
+        alert('done!');
+    });
+};
+
+$(document).ready( function() {
+    $('#query').submit(function(eventObj) {
+        $(this).append('<input type="hidden" name="someName" value="someValue">');
+        return true;
+    });
+});*/
+
+</script>-->
+
+<!--<input name='query' type='text' placeholder='Type query here' />-->

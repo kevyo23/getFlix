@@ -5,6 +5,7 @@ from django.views import View
 import requests
 import urllib2
 import json
+import re
 # Create your views here.
 
 from .forms import SubmitQueryForm
@@ -21,7 +22,7 @@ class queryIndexView(View):
         return render(request, "queryOMBd/index.html", context)
 
     def post(self, request):
-        print(request.POST.get('query'))
+        #print(request.POST.get('query'))
         form = SubmitQueryForm(request.POST)
         if form.is_valid():
             print(form.cleaned_data)
@@ -37,13 +38,19 @@ class queryIndexView(View):
         return render(request, "queryOMBd/index.html", context)
 
 def omdbapi_search(query):
-    search_query = query.replace(' ', '+')
-    url = 'http://www.omdbapi.com/?s=' + search_query
+    if re.match( r'tt\d+', query):
+        url = 'http://www.omdbapi.com/?i=' + query
+        display = 'Id'
+    else:
+        search_query = query.replace(' ', '+')
+        url = 'http://www.omdbapi.com/?s=' + search_query + '&plot=full'
+        display = 'Search'
     json_obj = urllib2.urlopen(url)
     data = json.load(json_obj)
-    if data['Response'] == 'True':
-        for item in data['Search']:
-            print item['Title'], item['Year']
+    data['Display'] = display
+    #if data['Response'] == 'True':
+        #for item in data['Search']:
+        #    print item['Title'], item['Year']
     return data;
 
 '''

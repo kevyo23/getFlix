@@ -1,0 +1,73 @@
+<script
+  src="https://code.jquery.com/jquery-3.2.0.js"
+  integrity="sha256-wPFJNIFlVY49B+CuAIrDr932XSb6Jk3J1M22M3E2ylQ="
+  crossorigin="anonymous"></script>
+
+<script>
+$(document).ready(function () {
+    var $Container = $('#container');
+    $Container.hide();
+    $("#test li").click(function(p_oEvent){
+        var sUrl, sMovie, oData;
+        p_oEvent.preventDefault();
+        sMovie = $(this).attr('id');//$("#test li").text().match(/tt\d+/);//$Form.find('input').val();
+        sUrl = 'https://www.omdbapi.com/?i=' + sMovie + '&plot=full'
+        $.ajax(sUrl, {
+            complete: function(p_oXHR, p_sStatus){
+                oData = $.parseJSON(p_oXHR.responseText);
+                console.log(oData);
+                $Container.find('.title').text(oData.Title);
+                $Container.find('.plot').text(oData.Plot);
+                $Container.find('.poster').html('<img src="' + oData.Poster + '"/>');
+                $Container.find('.year').text(oData.Year);
+                $Container.show();
+            }
+        });
+    });
+
+});
+
+</script>
+
+{%load static%}
+<div style='width: 800px; margin: 0 auto;'>
+    <h1>{{ title }}</h1>
+    <h2>{{ subTitle }}</h2>
+    {% if loadResults == 'True' and response.Display == 'Search' %}
+        <p> For more details on a listed result, click on the item below or copy the IMDb ID into the search (i.e. tt#######) </p>
+    {% endif %}
+    <form id = 'query' method='POST' action='.'> {% csrf_token %}
+        {{ form.as_p }}
+        <input type='submit' value='Go'/>
+    </form>
+    {% if loadResults == 'True' %}
+        {% if response.Response == 'True' %}
+            {% if response.Display == 'Search' %}
+                <p>Search results for ''{{ query }}''</p>
+                <ul id="test">
+                    {% for item in response.Search %}
+                        <li id="{{ item.imdbID}}">{{ item.Title }}, {{item.Year}}, {{ item.imdbID }}</li>
+                    {% endfor %}
+                </ul>
+                <p> Showing top 10 of {{ response.totalResults }} entries found. </p>
+            {% elif response.Display == 'Id' %}
+                <p>Displaying information on ''{{ response.Title }}''</p>
+                <ul>
+                    {% for key,value in response.items %}
+                        {% if key not in 'Display Response Poster imdbVotes' %}
+                            <li>{{ key }}: {{ value }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% else %}
+            <p>Error retrieving results. Please try a different query.</p>
+        {% endif %}
+    {% endif %}
+    <div id="container">
+        <h3 class="title">Title</h3>
+        <p class="plot">Plot</p>
+        <span class="poster">Poster</span>
+        <span class="year">Year</span>
+    </div>
+</div>

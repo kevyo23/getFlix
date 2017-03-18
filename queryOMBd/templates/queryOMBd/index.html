@@ -1,22 +1,187 @@
-<div style='width: 800px; margin: 0 auto;'>
-    <h1>{{ title }}</h1>
-    <h2>{{ subTitle }}</h2>
-    <form method='POST' action='.'> {% csrf_token %}
-        <!--<input name='query' type='text' placeholder='Type query here' />-->
-        {{ form.as_p }}
-        <input type='submit' value='Go'/>
-    </form>
-    {% if loadResults == 'True' %}
-        {% if response.Response == 'True' %}
-            <p>Search results for ''{{ query }}''</p>
-            <ul>
-                {% for item in response.Search %}
-                    <li>{{ item.Title }}, {{item.Year}}</li>
-                {% endfor %}
-            </ul>
-            <p> Showing top 10 of {{ response.totalResults }} entries found. </p>
-        {% else %}
-            <p>Error retrieving results. Please try a different query.</p>
-        {% endif %}
-    {% endif %}
-</div>
+<!DOCTYPE HTML>
+{% load static %}
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>GetFlix, search your favourite movies and shows</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="{% static "css/main.css" %}" />
+		<!--[if lte IE 9]><link rel="stylesheet" href="{% static "assets/css/ie9.css" %}" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="{% static "assets/css/ie8.css" %}" /><![endif]-->
+	</head>
+	<body>
+
+		<!-- Sidebar -->
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+							<li><a href="#intro">Welcome</a></li>
+							<li><a href="#one">Query results</a></li>
+							<li><a href="#two">More details</a></li>
+						</ul>
+					</nav>
+				</div>
+			</section>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Intro -->
+					<section id="intro" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1>GetFlix</h1>
+                            <p><!--[-->Proudly powered by <strong>OMDb API</strong>, <br>GetFlix allows your to search for your favourite movies and shows. Enjoy :)<!--]--></p>
+							<ul class="actions">
+                                <li><form id = 'query' method='POST' action='#one'> {% csrf_token %}
+                                    {{ form.as_p }}
+                                    <input type='submit' class="button scrolly" value='Go'/>
+                                </form></li>
+								<!--<li><a href="#one" class="button scrolly">Learn more</a></li>-->
+							</ul>
+						</div>
+					</section>
+
+				<!-- One -->
+					<section id="one" class="wrapper style2 spotlights">
+						<section>
+							<!--<a href="#" class="image"><img src="{% static "images/pic01.jpg" %}" alt="" data-position="center center" /></a>-->
+							<div class="content">
+								<div class="inner">
+                                    {% if loadResults == 'True' %}
+                                        {% if response.Response == 'True' %}
+                                            {% if response.Display == 'Search' %}
+                                                <h2>Search results for ''{{ query }}''</h2>
+                                                <ul id="test">
+                                                    {% for item in response.Search %}
+                                                        <li id="{{ item.imdbID}}"><a href="#two" class="scrolly">{{ item.Title }}</a>, {{item.Year}}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                                <p> Showing top 10 of {{ response.totalResults }} entries found. </p>
+                                                <a href="#two" class="scrolly"><p> Click on an above item to load more details below. </p></a>
+                                            {% elif response.Display == 'Id' %}
+                                                <p>Displaying information on ''{{ response.Title }}''</p>
+                                                <ul>
+                                                    {% for key,value in response.items %}
+                                                        {% if key not in 'Display Response Poster imdbVotes' %}
+                                                            <li>{{ key }}: {{ value }}</li>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        {% else %}
+                                            <p>Error retrieving results. Please try a different query.</p>
+                                        {% endif %}
+                                    {% else %}
+                                        <a href="#intro" class="button scrolly">Please enter a query above.</a>
+                                    {% endif %}
+								</div>
+							</div>
+						</section>
+					</section>
+
+				<!-- Two -->
+					<section id="two" class="wrapper style3">
+						<div class="inner" id = "container">
+							<h2 class="title">Title</h2>
+							<p class="plot">Plot</p>
+							<div class="features">
+								<section>
+									<span class="icon major fa-code"></span>
+									<h3>Year of release</h3>
+									<p class="year">Year</p>
+								</section>
+								<section>
+									<span class="icon major fa-lock"></span>
+									<h3>Genre</h3>
+									<p class="genre">Genre</p>
+								</section>
+								<section>
+									<span class="icon major fa-cog"></span>
+									<h3>IMDb Rating</h3>
+									<p class="imdbRating">IMDb Rating</p>
+								</section>
+								<section>
+									<span class="icon major fa-desktop"></span>
+									<h3>Parent Advisory Rating</h3>
+                                    <p class="rated">Rating</p>
+								</section>
+								<section>
+									<span class="icon major fa-chain"></span>
+									<h3>Main Actors</h3>
+                                    <p class="actors">Actors</p>
+								</section>
+								<section>
+									<span class="icon major fa-diamond"></span>
+									<h3>Runtime</h3>
+                                    <p class="runtime">Runtime</p>
+								</section>
+							</div>
+							<ul class="actions">
+								<li><a href="https://lmgtfy.com/?q=how+do+i+search+for+an+imbd+movie+or+show+in+google" class="button">Learn more</a></li>
+							</ul>
+						</div>
+					</section>
+			</div>
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper style1-alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>For CompClub 2017, YTB.</li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="{% static "js/jquery.min.js" %}"></script>
+			<script src="{% static "js/jquery.scrollex.min.js" %}"></script>
+			<script src="{% static "js/jquery.scrolly.min.js" %}"></script>
+			<script src="{% static "js/skel.min.js" %}"></script>
+			<script src="{% static "js/util.js" %}"></script>
+			<!--[if lte IE 8]><script src="{% static "js/ie/respond.min.js" %}"></script><![endif]-->
+			<script src="{% static "js/main.js" %}"></script>
+            <script
+              src="https://code.jquery.com/jquery-3.2.0.js"
+              integrity="sha256-wPFJNIFlVY49B+CuAIrDr932XSb6Jk3J1M22M3E2ylQ="
+              crossorigin="anonymous"></script>
+
+            <script>
+            $(document).ready(function () {
+                var $Container = $('#container');
+                $Container.hide();
+                $("#test li").click(function(p_oEvent){
+                    var sUrl, sMovie, oData;
+                    p_oEvent.preventDefault();
+                    sMovie = $(this).attr('id');//$("#test li").text().match(/tt\d+/);//$Form.find('input').val();
+                    sUrl = 'https://www.omdbapi.com/?i=' + sMovie + '&plot=full'
+                    $.ajax(sUrl, {
+                        complete: function(p_oXHR, p_sStatus){
+                            oData = $.parseJSON(p_oXHR.responseText);
+                            console.log(oData);
+                            $Container.find('.title').text(oData.Title);
+                            $Container.find('.plot').text(oData.Plot);
+                            $Container.find('.poster').html('<img src="' + oData.Poster + '"/>');
+                            $Container.find('.year').text(oData.Year);
+                            $Container.find('.imdbRating').text(oData.imdbRating);
+                            $Container.find('.actors').text(oData.Actors);
+                            $Container.find('.genre').text(oData.Genre);
+                            $Container.find('.rated').text(oData.Rated);
+                            $Container.find('.runtime').text(oData.Runtime);
+                            $Container.show();
+                        }
+                    });
+                });
+
+            });
+
+            </script>
+
+	</body>
+</html>

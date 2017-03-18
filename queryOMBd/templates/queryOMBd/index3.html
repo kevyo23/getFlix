@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+{% load static %}
+<html>
+	<head>
+		<title>GetFlix, search your favourite movies and shows</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{% static "css/main.css" %}" />
+		<noscript><link rel="stylesheet" href="{% static "css/noscript.css" %}" /></noscript>
+	</head>
+	<body>
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Wrapper -->
+					<div id="wrapper">
+
+						<!-- Panel (Banner) -->
+							<section class="panel banner right">
+								<div class="content color0 span-3-75">
+									<h1 class="major"><!--[-->Hi, welcome<!--]--><br />
+									<!--[-->to GetFlix<!--]--></h1>
+									<p><!--[-->Proudly powered by <strong>OMDb API</strong>, GetFlix allows your to serach for your favourite movies and shows. Enjoy :)<!--]--></p>
+                                    <form id = 'query' method='POST' action='.'> {% csrf_token %}
+                                        {{ form.as_p }}
+                                        <input type='submit' value='Go'/>
+                                    </form>
+                                    {% if loadResults == 'True' %}
+                                        {% if response.Response == 'True' %}
+                                            {% if response.Display == 'Search' %}
+                                                <p>Search results for ''{{ query }}''</p>
+                                                <ul id="test">
+                                                    {% for item in response.Search %}
+                                                        <li id="{{ item.imdbID}}">{{ item.Title }}, {{item.Year}}, {{ item.imdbID }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                                <p> Showing top 10 of {{ response.totalResults }} entries found. </p>
+                                            {% elif response.Display == 'Id' %}
+                                                <p>Displaying information on ''{{ response.Title }}''</p>
+                                                <ul>
+                                                    {% for key,value in response.items %}
+                                                        {% if key not in 'Display Response Poster imdbVotes' %}
+                                                            <li>{{ key }}: {{ value }}</li>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        {% else %} "{% static "img/blah" %}"
+                                            <p>Error retrieving results. Please try a different query.</p>
+                                        {% endif %}
+                                    {% endif %}
+                                    <div id="container">
+                                        <h3 class="title">Title</h3>
+                                        <p class="plot">Plot</p>
+                                        <span class="poster">Poster</span>
+                                        <span class="year">Year</span>
+                                    </div>
+                                    <!--<ul class="actions">
+										<li><a href="#first" class="button special color1 circle icon fa-angle-right">Next</a></li>
+									</ul>-->
+								</div>
+								<div class="image filtered span-1-75" data-position="25% 25%">
+									<img src="{% static "images/pic01.jpg" %}" alt="" />
+								</div>
+							</section>
+
+
+						<!-- Copyright -->
+							<div class="copyright">&copy; Untitled. Design: <a href="https://html5up.net">HTML5 UP</a>.</div>
+
+					</div>
+
+			</div>
+		<!-- Scripts -->
+			<script src="{% static "js/jquery.min.js" %}"></script>
+			<script src="{% static "js/skel.min.js" %}"></script>
+			<script src="{% static "js/main.js" %}"></script>
+            <script
+              src="https://code.jquery.com/jquery-3.2.0.js"
+              integrity="sha256-wPFJNIFlVY49B+CuAIrDr932XSb6Jk3J1M22M3E2ylQ="
+              crossorigin="anonymous"></script>
+
+            <script>
+            $(document).ready(function () {
+                var $Container = $('#container');
+                $Container.hide();
+                $("#test li").click(function(p_oEvent){
+                    var sUrl, sMovie, oData;
+                    p_oEvent.preventDefault();
+                    sMovie = $(this).attr('id');//$("#test li").text().match(/tt\d+/);//$Form.find('input').val();
+                    sUrl = 'https://www.omdbapi.com/?i=' + sMovie + '&plot=full'
+                    $.ajax(sUrl, {
+                        complete: function(p_oXHR, p_sStatus){
+                            oData = $.parseJSON(p_oXHR.responseText);
+                            console.log(oData);
+                            $Container.find('.title').text(oData.Title);
+                            $Container.find('.plot').text(oData.Plot);
+                            $Container.find('.poster').html('<img src="' + oData.Poster + '"/>');
+                            $Container.find('.year').text(oData.Year);
+                            $Container.show();
+                        }
+                    });
+                });
+
+            });
+
+            </script>
+	</body>
+</html>
