@@ -84,7 +84,10 @@ WSGI_APPLICATION = 'getFlix.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-DATABASES = { 'default': dj_database_url.config() }
+DATABASES = { 'default':
+                { 'ENGINE': 'django.db.backends.postgresql_psycopg2'} }
+
+DATABASES['default'] = dj_database_url.config()
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
